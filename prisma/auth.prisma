@@ -1,0 +1,38 @@
+enum Role {
+  CASHIER
+  SUPERVISOR
+  STORE_MGR
+  INVENTORY_OFFICER
+  ADMIN_OWNER
+}
+
+model User {
+  id        String     @id @default(uuid())
+  name      String
+  email     String     @unique
+  phone     String?    @unique
+  password  String
+  pin       String?    // Hashed 4-6 digit supervisor/manager override PIN
+  role      Role       @default(CASHIER)
+  isActive  Boolean    @default(true)
+  auditLogs AuditLog[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@map("tbl_users")
+}
+
+model AuditLog {
+  id            String   @id @default(uuid())
+  timestamp     DateTime @default(now())
+  userId        String?
+  user          User?    @relation(fields: [userId], references: [id])
+  terminalId    String?
+  ipAddress     String?
+  actionType    String
+  previousValue String?
+  newValue      String?
+  reasonNote    String?
+
+  @@map("tbl_audit_logs")
+}
