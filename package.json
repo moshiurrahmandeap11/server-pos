@@ -4,7 +4,13 @@
   "description": "Apex Retail POS & Omnichannel Inventory Management Backend Engine",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/app/server.ts"
+    "dev": "tsx watch src/app/server.ts",
+    "build": "tsc",
+    "start": "node dist/src/app/server.js",
+    "migrate": "prisma migrate dev",
+    "generate": "prisma generate",
+    "db:push": "prisma db push",
+    "studio": "prisma studio"
   },
   "dependencies": {
     "express": "^5.3.0"
