@@ -19,4 +19,20 @@ export interface ISystemSettingsPayload {
   defaultBiller?: string;
   pdfLibrary?: string;
   useCodeForSlug?: string;
+
+  // Products Configuration Sub-section
+  productTax?: string;
+  racks?: string;
+  productVariants?: string;
+  productExpiry?: string;
+  removeExpired?: string;
+  imageWidth?: number;
+  imageHeight?: number;
+  thumbnailWidth?: number;
+  thumbnailHeight?: number;
+  watermark?: string;
+  displayWarehouseProducts?: string;
+  barcodeSeparator?: string;
+  barcodeRenderer?: string;
+  updateCostWithPurchase?: string;
 }

@@ -21,6 +21,22 @@ const updateSystemSettingsSchema = z.object({
   defaultBiller: z.string().optional(),
   pdfLibrary: z.string().optional(),
   useCodeForSlug: z.string().optional(),
+
+  // Products Configuration Sub-section
+  productTax: z.string().optional(),
+  racks: z.string().optional(),
+  productVariants: z.string().optional(),
+  productExpiry: z.string().optional(),
+  removeExpired: z.string().optional(),
+  imageWidth: z.number().int().positive().optional(),
+  imageHeight: z.number().int().positive().optional(),
+  thumbnailWidth: z.number().int().positive().optional(),
+  thumbnailHeight: z.number().int().positive().optional(),
+  watermark: z.string().optional(),
+  displayWarehouseProducts: z.string().optional(),
+  barcodeSeparator: z.string().optional(),
+  barcodeRenderer: z.string().optional(),
+  updateCostWithPurchase: z.string().optional(),
 });
 
 export const systemSettingsValidation = {

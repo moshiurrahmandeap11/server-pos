@@ -20,6 +20,23 @@ model SystemSetting {
   defaultBiller            String   @default("Apex POS")
   pdfLibrary               String   @default("mPDF")
   useCodeForSlug           String   @default("Enable")
+
+  // Products Configuration Sub-section
+  productTax               String   @default("Enable")
+  racks                    String   @default("Disable")
+  productVariants          String   @default("Enable")
+  productExpiry            String   @default("Disable")
+  removeExpired            String   @default("No, I will remove manually")
+  imageWidth               Int      @default(800)
+  imageHeight              Int      @default(800)
+  thumbnailWidth           Int      @default(150)
+  thumbnailHeight          Int      @default(150)
+  watermark                String   @default("Yes")
+  displayWarehouseProducts String   @default("Hide with 0 quantity")
+  barcodeSeparator         String   @default("Dot (.)")
+  barcodeRenderer          String   @default("Image")
+  updateCostWithPurchase   String   @default("No")
+
   createdAt                DateTime @default(now())
   updatedAt                DateTime @updatedAt
 
