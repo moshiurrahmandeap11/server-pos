@@ -1,0 +1,27 @@
+model SystemSetting {
+  id                       String   @id @default(uuid())
+  siteName                 String   @default("Apex POS")
+  language                 String   @default("English")
+  defaultCurrency          String   @default("BDT")
+  accountingMethod         String   @default("AVCO (Average Cost Method)")
+  defaultEmail             String   @default("info@apexpos.com")
+  defaultCustomerGroup     String   @default("General")
+  defaultPriceGroup        String   @default("Default")
+  maintenanceMode          String   @default("No")
+  theme                    String   @default("Default")
+  rtlSupport               String   @default("Disable")
+  loginCaptcha             String   @default("Disable")
+  numberDaysDisableEditing Int      @default(0)
+  rowsPerPage              Int      @default(10)
+  dateFormat               String   @default("dd-mm-yyyy")
+  timezone                 String   @default("Asia/Dhaka")
+  calender                 String   @default("Shared")
+  defaultWarehouse         String   @default("Main Warehouse")
+  defaultBiller            String   @default("Apex POS")
+  pdfLibrary               String   @default("mPDF")
+  useCodeForSlug           String   @default("Enable")
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  @@map("tbl_system_settings")
+}
