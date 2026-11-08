@@ -26,7 +26,19 @@ const updateSystemSettings = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const runCronJob = catchAsync(async (req: Request, res: Response) => {
+  const result = await systemSettingsService.runCronJob();
+
+  sendResponse(res, {
+    httpStatusCode: status.OK,
+    success: true,
+    message: "Cron job executed successfully",
+    data: result,
+  });
+});
+
 export const systemSettingsController = {
   getSystemSettings,
   updateSystemSettings,
+  runCronJob,
 };

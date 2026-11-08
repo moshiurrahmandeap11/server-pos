@@ -6,6 +6,10 @@ import { checkAuth } from "../../../middleware/checkAuth";
 
 const router = Router();
 
+// Cron Job Execution endpoint (can be called via API button or scheduled cron runner)
+router.get("/cron/run", systemSettingsController.runCronJob);
+router.post("/cron/run", checkAuth(), systemSettingsController.runCronJob);
+
 // Publicly readable so the login screen and unauthenticated clients can load siteName, theme, etc.
 router.get("/", systemSettingsController.getSystemSettings);
 router.get("/public", systemSettingsController.getSystemSettings);

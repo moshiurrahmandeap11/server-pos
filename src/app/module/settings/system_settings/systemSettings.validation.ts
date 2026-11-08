@@ -85,6 +85,12 @@ const updateSystemSettingsSchema = z.object({
 
   // Email Sub-section
   emailProtocol: z.string().optional(),
+
+  // Award Points Configuration Sub-section
+  customerAwardPointsSpent: z.number().min(0).optional(),
+  customerAwardPoints: z.number().min(0).optional(),
+  staffAwardPointsSale: z.number().min(0).optional(),
+  staffAwardPoints: z.number().min(0).optional(),
 });
 
 export const systemSettingsValidation = {

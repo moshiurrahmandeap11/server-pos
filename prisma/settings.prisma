@@ -85,6 +85,12 @@ model SystemSetting {
   // Email Sub-section
   emailProtocol            String   @default("PHP Mail Function")
 
+  // Award Points Configuration Sub-section
+  customerAwardPointsSpent Float    @default(0)
+  customerAwardPoints      Float    @default(0)
+  staffAwardPointsSale     Float    @default(0)
+  staffAwardPoints         Float    @default(0)
+
   createdAt                DateTime @default(now())
   updatedAt                DateTime @updatedAt
 

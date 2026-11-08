@@ -83,4 +83,10 @@ export interface ISystemSettingsPayload {
 
   // Email Sub-section
   emailProtocol?: string;
+
+  // Award Points Configuration Sub-section
+  customerAwardPointsSpent?: number;
+  customerAwardPoints?: number;
+  staffAwardPointsSale?: number;
+  staffAwardPoints?: number;
 }
