@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { Role } from "@prisma/client";
 
 const loginSchema = z.object({
     email: z.string().email("Please provide a valid email address"),
@@ -11,7 +10,7 @@ const registerSchema = z.object({
     email: z.string().email("Invalid email format"),
     password: z.string().min(6, "Password must be at least 6 characters"),
     phone: z.string().optional(),
-    role: z.nativeEnum(Role).optional(),
+    roleId: z.string().uuid("Invalid role ID format").optional(),
     pin: z.string().min(4).max(6).optional(), // 4-6 digit supervisor override PIN
 });
 

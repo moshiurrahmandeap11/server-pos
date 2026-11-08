@@ -1,5 +1,3 @@
-import { Role } from "@prisma/client";
-
 export interface ILoginResponse {
     accessToken: string;
     refreshToken: string;
@@ -7,7 +5,9 @@ export interface ILoginResponse {
         id: string;
         name: string;
         email: string;
-        role: Role;
         phone: string | null;
+        roleId: string;
+        role: string;
+        permissions: string[];
     };
 }

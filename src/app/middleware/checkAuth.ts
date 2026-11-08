@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import status from "http-status";
-import { Role } from "@prisma/client";
 import { env } from "../config/env";
 import AppError from "../errorHelpers/AppError";
 import { verifyToken } from "../utils/jwt";
@@ -8,8 +7,10 @@ import { verifyToken } from "../utils/jwt";
 export interface AuthUser {
     id: string;
     email: string;
-    role: Role;
+    role: string;
+    roleId: string;
     name: string;
+    permissions?: string[];
 }
 
 declare global {
@@ -20,10 +21,10 @@ declare global {
     }
 }
 
-export const checkAuth = (...requiredRoles: Role[]) => {
+export const checkAuth = (...requiredRoles: string[]) => {
     return (req: Request, res: Response, next: NextFunction) => {
         try {
-            // Read directly from httpOnly cookie (no Bearer header required)
+            // Read directly from httpOnly cookie or fallback to Authorization header
             const token = req.cookies?.accessToken || (
                 req.headers.authorization?.startsWith("Bearer ")
                     ? req.headers.authorization.split(" ")[1]
@@ -36,7 +37,8 @@ export const checkAuth = (...requiredRoles: Role[]) => {
 
             const decoded = verifyToken(token, env.ACCESS_TOKEN_SECRET) as AuthUser;
 
-            if (requiredRoles.length > 0 && !requiredRoles.includes(decoded.role)) {
+            // SUPER_ADMIN has master override
+            if (requiredRoles.length > 0 && decoded.role !== "SUPER_ADMIN" && !requiredRoles.includes(decoded.role)) {
                 throw new AppError(status.FORBIDDEN, "You do not have permission to perform this action");
             }
 

@@ -1,5 +1,4 @@
 import status from "http-status";
-import { Role } from "@prisma/client";
 import { prisma } from "../../lib/prisma";
 import AppError from "../../errorHelpers/AppError";
 import { comparePassword, hashPassword } from "../../utils/bcrypt";
@@ -12,7 +11,7 @@ const registerUser = async (payload: {
     email: string;
     password: string;
     phone?: string;
-    role?: Role;
+    roleId?: string;
     pin?: string;
 }) => {
     const existingUser = await prisma.user.findFirst({
@@ -28,6 +27,28 @@ const registerUser = async (payload: {
         throw new AppError(status.CONFLICT, "User with this email or phone already exists");
     }
 
+    // Resolve or validate Role
+    let assignedRoleId = payload.roleId;
+
+    if (assignedRoleId) {
+        const roleExists = await prisma.role.findUnique({
+            where: { id: assignedRoleId },
+        });
+        if (!roleExists) {
+            throw new AppError(status.BAD_REQUEST, "Selected role does not exist");
+        }
+    } else {
+        // Fallback to SUPER_ADMIN or first role
+        const defaultRole = await prisma.role.findFirst({
+            where: { name: "SUPER_ADMIN" },
+        }) || await prisma.role.findFirst();
+
+        if (!defaultRole) {
+            throw new AppError(status.INTERNAL_SERVER_ERROR, "No system role found to assign. Please seed roles.");
+        }
+        assignedRoleId = defaultRole.id;
+    }
+
     const hashedPassword = await hashPassword(payload.password);
     const hashedPin = payload.pin ? await hashPassword(payload.pin) : null;
 
@@ -38,14 +59,21 @@ const registerUser = async (payload: {
             phone: payload.phone,
             password: hashedPassword,
             pin: hashedPin,
-            role: payload.role || Role.CASHIER,
+            roleId: assignedRoleId,
         },
         select: {
             id: true,
             name: true,
             email: true,
             phone: true,
-            role: true,
+            roleId: true,
+            role: {
+                select: {
+                    id: true,
+                    name: true,
+                    displayName: true,
+                },
+            },
             createdAt: true,
         },
     });
@@ -56,6 +84,17 @@ const registerUser = async (payload: {
 const loginUser = async (payload: { email: string; password: string }): Promise<ILoginResponse> => {
     const user = await prisma.user.findUnique({
         where: { email: payload.email },
+        include: {
+            role: {
+                include: {
+                    permissions: {
+                        include: {
+                            permission: true,
+                        },
+                    },
+                },
+            },
+        },
     });
 
     if (!user || !user.isActive) {
@@ -67,11 +106,15 @@ const loginUser = async (payload: { email: string; password: string }): Promise<
         throw new AppError(status.UNAUTHORIZED, "Invalid email or password");
     }
 
+    const permissions = user.role.permissions.map((rp) => rp.permission.code);
+
     const tokenPayload = {
         id: user.id,
         name: user.name,
         email: user.email,
-        role: user.role,
+        role: user.role.name,
+        roleId: user.role.id,
+        permissions,
     };
 
     const accessToken = generateToken(tokenPayload, env.ACCESS_TOKEN_SECRET, env.ACCESS_TOKEN_EXPIRES_IN);
@@ -85,52 +128,69 @@ const loginUser = async (payload: { email: string; password: string }): Promise<
             name: user.name,
             email: user.email,
             phone: user.phone,
-            role: user.role,
+            roleId: user.role.id,
+            role: user.role.name,
+            permissions,
         },
     };
 };
 
 const verifySupervisorPin = async (pin: string, actionType: string) => {
-    // Look up supervisors, store managers, or admins
+    // Look up staff members with an override PIN
     const authorizedStaff = await prisma.user.findMany({
         where: {
             isActive: true,
-            role: {
-                in: [Role.SUPERVISOR, Role.STORE_MGR, Role.ADMIN_OWNER],
-            },
             pin: {
                 not: null,
             },
         },
+        include: {
+            role: {
+                include: {
+                    permissions: {
+                        include: {
+                            permission: true,
+                        },
+                    },
+                },
+            },
+        },
     });
 
-    let matchedSupervisor = null;
+    let matchedStaff = null;
 
     for (const staff of authorizedStaff) {
         if (staff.pin && (await comparePassword(pin, staff.pin))) {
-            matchedSupervisor = staff;
-            break;
+            // Verify if staff has supervisor/void permission or is SUPER_ADMIN
+            const permissions = staff.role.permissions.map((rp) => rp.permission.code);
+            const isAuthorized = staff.role.name === "SUPER_ADMIN" || permissions.includes("pos.order.void");
+
+            if (isAuthorized) {
+                matchedStaff = staff;
+                break;
+            }
         }
     }
 
-    if (!matchedSupervisor) {
-        throw new AppError(status.FORBIDDEN, "Invalid supervisor PIN. Action denied.");
+    if (!matchedStaff) {
+        throw new AppError(status.FORBIDDEN, "Invalid supervisor PIN or unauthorized staff. Action denied.");
     }
 
     // Log the override action into AuditLog
     await prisma.auditLog.create({
         data: {
-            userId: matchedSupervisor.id,
+            userId: matchedStaff.id,
             actionType: `SUPERVISOR_OVERRIDE_${actionType.toUpperCase()}`,
-            reasonNote: `Authorized by ${matchedSupervisor.name} (${matchedSupervisor.role})`,
+            reasonNote: `Authorized by ${matchedStaff.name} (${matchedStaff.role.displayName})`,
         },
     });
 
     return {
         authorized: true,
-        supervisorId: matchedSupervisor.id,
-        supervisorName: matchedSupervisor.name,
-        role: matchedSupervisor.role,
+        supervisorId: matchedStaff.id,
+        supervisorName: matchedStaff.name,
+        role: matchedStaff.role.name,
+        roleDisplayName: matchedStaff.role.displayName,
     };
 };
 
@@ -142,7 +202,26 @@ const getMyProfile = async (userId: string) => {
             name: true,
             email: true,
             phone: true,
-            role: true,
+            roleId: true,
+            role: {
+                select: {
+                    id: true,
+                    name: true,
+                    displayName: true,
+                    permissions: {
+                        select: {
+                            permission: {
+                                select: {
+                                    id: true,
+                                    code: true,
+                                    displayName: true,
+                                    module: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            },
             createdAt: true,
         },
     });
@@ -151,7 +230,19 @@ const getMyProfile = async (userId: string) => {
         throw new AppError(status.NOT_FOUND, "User profile not found");
     }
 
-    return user;
+    const permissions = user.role.permissions.map((p) => p.permission.code);
+
+    return {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        roleId: user.roleId,
+        role: user.role.name,
+        roleDisplayName: user.role.displayName,
+        permissions,
+        createdAt: user.createdAt,
+    };
 };
 
 export const authService = {

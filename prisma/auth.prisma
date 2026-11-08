@@ -1,9 +1,40 @@
-enum Role {
-  CASHIER
-  SUPERVISOR
-  STORE_MGR
-  INVENTORY_OFFICER
-  ADMIN_OWNER
+model Role {
+  id          String           @id @default(uuid())
+  name        String           @unique // e.g. "SUPER_ADMIN", "MANAGER", "CASHIER"
+  displayName String           // e.g. "Super Admin", "Store Manager"
+  description String?
+  isSystem    Boolean          @default(false) // SUPER_ADMIN is true and protected from deletion
+  users       User[]
+  permissions RolePermission[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@map("tbl_roles")
+}
+
+model Permission {
+  id          String           @id @default(uuid())
+  code        String           @unique // e.g. "pos.order.void", "inventory.product.create"
+  displayName String           // e.g. "Void Completed Orders"
+  module      String           // e.g. "POS", "INVENTORY", "REPORTS", "USERS", "ROLES"
+  description String?
+  roles       RolePermission[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@map("tbl_permissions")
+}
+
+model RolePermission {
+  id           String     @id @default(uuid())
+  roleId       String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permissionId String
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+
+  @@unique([roleId, permissionId])
+  @@map("tbl_role_permissions")
 }
 
 model User {
@@ -13,7 +44,8 @@ model User {
   phone     String?    @unique
   password  String
   pin       String?    // Hashed 4-6 digit supervisor/manager override PIN
-  role      Role       @default(CASHIER)
+  roleId    String
+  role      Role       @relation(fields: [roleId], references: [id])
   isActive  Boolean    @default(true)
   auditLogs AuditLog[]
   createdAt DateTime   @default(now())
