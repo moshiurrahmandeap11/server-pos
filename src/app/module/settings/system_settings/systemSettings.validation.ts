@@ -37,6 +37,32 @@ const updateSystemSettingsSchema = z.object({
   barcodeSeparator: z.string().optional(),
   barcodeRenderer: z.string().optional(),
   updateCostWithPurchase: z.string().optional(),
+
+  // Sales Configuration Sub-section
+  overSelling: z.string().optional(),
+  referenceFormat: z.string().optional(),
+  orderTax: z.string().optional(),
+  productLevelDiscount: z.string().optional(),
+  productSerial: z.string().optional(),
+  autoDetectBarcode: z.string().optional(),
+  productsCountFixBarcode: z.number().int().min(0).optional(),
+  cartItemAdditionMethod: z.string().optional(),
+  defaultOrderPageFocus: z.string().optional(),
+  ksaInvoiceQrCode: z.string().optional(),
+  invoiceView: z.string().optional(),
+
+  // Prefix Configuration Sub-section
+  salesPrefix: z.string().optional(),
+  returnSalePrefix: z.string().optional(),
+  paymentPrefix: z.string().optional(),
+  purchasePaymentPrefix: z.string().optional(),
+  deliveryPrefix: z.string().optional(),
+  quotationPrefix: z.string().optional(),
+  purchasePrefix: z.string().optional(),
+  returnPurchasePrefix: z.string().optional(),
+  transferPrefix: z.string().optional(),
+  expensePrefix: z.string().optional(),
+  qaPrefix: z.string().optional(),
 });
 
 export const systemSettingsValidation = {

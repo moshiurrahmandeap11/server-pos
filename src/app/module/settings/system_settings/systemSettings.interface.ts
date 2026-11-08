@@ -35,4 +35,30 @@ export interface ISystemSettingsPayload {
   barcodeSeparator?: string;
   barcodeRenderer?: string;
   updateCostWithPurchase?: string;
+
+  // Sales Configuration Sub-section
+  overSelling?: string;
+  referenceFormat?: string;
+  orderTax?: string;
+  productLevelDiscount?: string;
+  productSerial?: string;
+  autoDetectBarcode?: string;
+  productsCountFixBarcode?: number;
+  cartItemAdditionMethod?: string;
+  defaultOrderPageFocus?: string;
+  ksaInvoiceQrCode?: string;
+  invoiceView?: string;
+
+  // Prefix Configuration Sub-section
+  salesPrefix?: string;
+  returnSalePrefix?: string;
+  paymentPrefix?: string;
+  purchasePaymentPrefix?: string;
+  deliveryPrefix?: string;
+  quotationPrefix?: string;
+  purchasePrefix?: string;
+  returnPurchasePrefix?: string;
+  transferPrefix?: string;
+  expensePrefix?: string;
+  qaPrefix?: string;
 }

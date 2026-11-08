@@ -37,6 +37,32 @@ model SystemSetting {
   barcodeRenderer          String   @default("Image")
   updateCostWithPurchase   String   @default("No")
 
+  // Sales Configuration Sub-section
+  overSelling              String   @default("Yes")
+  referenceFormat          String   @default("Sequence Number")
+  orderTax                 String   @default("Vat")
+  productLevelDiscount     String   @default("Enable")
+  productSerial            String   @default("Enable")
+  autoDetectBarcode        String   @default("Enable")
+  productsCountFixBarcode  Int      @default(4)
+  cartItemAdditionMethod   String   @default("Add New Item to cart")
+  defaultOrderPageFocus    String   @default("Add item input")
+  ksaInvoiceQrCode         String   @default("Disable")
+  invoiceView              String   @default("Standard")
+
+  // Prefix Configuration Sub-section
+  salesPrefix              String   @default("SALE")
+  returnSalePrefix         String   @default("SR")
+  paymentPrefix            String   @default("IPAY")
+  purchasePaymentPrefix    String   @default("POP")
+  deliveryPrefix           String   @default("DO")
+  quotationPrefix          String   @default("QUOTE")
+  purchasePrefix           String   @default("PO")
+  returnPurchasePrefix     String   @default("PR")
+  transferPrefix           String   @default("TR")
+  expensePrefix            String   @default("")
+  qaPrefix                 String   @default("")
+
   createdAt                DateTime @default(now())
   updatedAt                DateTime @updatedAt
 
