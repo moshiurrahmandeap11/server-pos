@@ -63,6 +63,28 @@ model SystemSetting {
   expensePrefix            String   @default("")
   qaPrefix                 String   @default("")
 
+  // Money and Number Format Sub-section
+  decimals                 Int      @default(2)
+  quantityDecimals         Int      @default(2)
+  southAsianCurrencyFormat String   @default("Disable")
+  decimalsSeparator        String   @default("Dot (.)")
+  thousandsSeparator       String   @default("Comma")
+  displayCurrencySymbol    String   @default("Before")
+  currencySymbol           String   @default("৳")
+
+  // Weighing Scale Barcode Sub-section
+  wsBarcodeContains        String   @default("Weight/Quantity")
+  wsBarcodeTotalChars      Int      @default(0)
+  wsFlagChars              Int      @default(0)
+  wsItemCodeStartPos       Int      @default(0)
+  wsItemCodeChars          Int      @default(0)
+  wsWeightStartPos         Int      @default(0)
+  wsWeightChars            Int      @default(0)
+  wsWeightDivideBy         Int      @default(0)
+
+  // Email Sub-section
+  emailProtocol            String   @default("PHP Mail Function")
+
   createdAt                DateTime @default(now())
   updatedAt                DateTime @updatedAt
 

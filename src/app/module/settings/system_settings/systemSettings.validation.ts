@@ -63,6 +63,28 @@ const updateSystemSettingsSchema = z.object({
   transferPrefix: z.string().optional(),
   expensePrefix: z.string().optional(),
   qaPrefix: z.string().optional(),
+
+  // Money and Number Format Sub-section
+  decimals: z.number().int().min(0).max(10).optional(),
+  quantityDecimals: z.number().int().min(0).max(10).optional(),
+  southAsianCurrencyFormat: z.string().optional(),
+  decimalsSeparator: z.string().optional(),
+  thousandsSeparator: z.string().optional(),
+  displayCurrencySymbol: z.string().optional(),
+  currencySymbol: z.string().optional(),
+
+  // Weighing Scale Barcode Sub-section
+  wsBarcodeContains: z.string().optional(),
+  wsBarcodeTotalChars: z.number().int().min(0).optional(),
+  wsFlagChars: z.number().int().min(0).optional(),
+  wsItemCodeStartPos: z.number().int().min(0).optional(),
+  wsItemCodeChars: z.number().int().min(0).optional(),
+  wsWeightStartPos: z.number().int().min(0).optional(),
+  wsWeightChars: z.number().int().min(0).optional(),
+  wsWeightDivideBy: z.number().int().min(0).optional(),
+
+  // Email Sub-section
+  emailProtocol: z.string().optional(),
 });
 
 export const systemSettingsValidation = {
