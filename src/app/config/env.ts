@@ -12,6 +12,7 @@ interface EnvConfig {
     REFRESH_TOKEN_EXPIRES_IN: string;
     REDIS_URL: string;
     ALLOWED_ORIGINS?: string;
+    WEBDOMAIN?: string;
 }
 
 const loadEnvVariables = (): EnvConfig => {
@@ -25,6 +26,7 @@ const loadEnvVariables = (): EnvConfig => {
         REFRESH_TOKEN_EXPIRES_IN: process.env.REFRESH_TOKEN_EXPIRES_IN || '30d',
         REDIS_URL: process.env.REDIS_URL || 'redis://localhost:6379',
         ALLOWED_ORIGINS: process.env.ALLOWED_ORIGINS || 'http://localhost:3000,http://localhost:3001',
+        WEBDOMAIN: process.env.WEBDOMAIN,
     };
 };
 

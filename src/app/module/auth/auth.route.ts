@@ -19,6 +19,11 @@ router.post(
 );
 
 router.post(
+    "/logout",
+    authController.logout
+);
+
+router.post(
     "/verify-pin",
     validateRequest(authValidation.verifySupervisorPinSchema),
     authController.verifySupervisorPin

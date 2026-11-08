@@ -3,6 +3,7 @@ import status from "http-status";
 import { catchAsync } from "../../shared/catchAsync";
 import { sendResponse } from "../../shared/sendResponse";
 import { authService } from "./auth.service";
+import { setAuthCookies, clearAuthCookies } from "../../utils/cookie";
 
 const register = catchAsync(async (req: Request, res: Response) => {
     const result = await authService.registerUser(req.body);
@@ -18,21 +19,28 @@ const register = catchAsync(async (req: Request, res: Response) => {
 const login = catchAsync(async (req: Request, res: Response) => {
     const result = await authService.loginUser(req.body);
 
-    // Set secure HTTP-only refresh token cookie
-    res.cookie("refreshToken", result.refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-    });
+    // Set both accessToken and refreshToken as httpOnly cookies
+    setAuthCookies(res, result.accessToken, result.refreshToken);
 
     sendResponse(res, {
         httpStatusCode: status.OK,
         success: true,
         message: "User logged in successfully",
         data: {
-            accessToken: result.accessToken,
             user: result.user,
+            accessToken: result.accessToken,
+            refreshToken: result.refreshToken,
         },
+    });
+});
+
+const logout = catchAsync(async (req: Request, res: Response) => {
+    clearAuthCookies(res);
+
+    sendResponse(res, {
+        httpStatusCode: status.OK,
+        success: true,
+        message: "User logged out successfully and cookies cleared",
     });
 });
 
@@ -63,6 +71,7 @@ const getMyProfile = catchAsync(async (req: Request, res: Response) => {
 export const authController = {
     register,
     login,
+    logout,
     verifySupervisorPin,
     getMyProfile,
 };
