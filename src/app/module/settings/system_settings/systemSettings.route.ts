@@ -6,12 +6,11 @@ import { checkAuth } from "../../../middleware/checkAuth";
 
 const router = Router();
 
-router.get(
-  "/",
-  checkAuth(),
-  systemSettingsController.getSystemSettings
-);
+// Publicly readable so the login screen and unauthenticated clients can load siteName, theme, etc.
+router.get("/", systemSettingsController.getSystemSettings);
+router.get("/public", systemSettingsController.getSystemSettings);
 
+// Protected: Only authenticated administrators can modify system settings
 router.patch(
   "/",
   checkAuth(),
