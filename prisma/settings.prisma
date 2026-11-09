@@ -96,3 +96,25 @@ model SystemSetting {
 
   @@map("tbl_system_settings")
 }
+
+
+model PosSetting {
+  id                              String   @id @default(uuid())
+  displayProducts                 Int      @default(100)
+  posPinCode                      String?  @default("")
+  defaultCategory                 String   @default("Grocery")
+  defaultBiller                   String   @default("Sunshine IT")
+  defaultCustomer                 String   @default("Walking Customer")
+  displayTime                     String   @default("No")
+  onScreenKeyboard                String   @default("Yes")
+  productButtonColor              String   @default("Default")
+  tooltips                        String   @default("No")
+  rounding                        String   @default("To nearest number (integer)")
+  itemOrder                       String   @default("Default")
+  afterSalePage                   String   @default("Receipt")
+  displayCustomerDetailsOnReceipt String   @default("Yes")
+  createdAt                       DateTime @default(now())
+  updatedAt                       DateTime @updatedAt
+
+  @@map("tbl_pos_settings")
+}
